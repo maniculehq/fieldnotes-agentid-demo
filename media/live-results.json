@@ -1,0 +1,82 @@
+{
+  "liveSignupVerified": true,
+  "identitySource": "live-agentid",
+  "agentInbox": "[redacted]",
+  "identityFields": {
+    "sub": {
+      "type": "string"
+    },
+    "email": {
+      "type": "string"
+    },
+    "email_verified": {
+      "type": "boolean",
+      "value": true
+    },
+    "name": {
+      "type": "string"
+    },
+    "owner_sub": {
+      "type": "string"
+    },
+    "owner_name": {
+      "type": "string"
+    },
+    "owner_email": {
+      "type": "string"
+    },
+    "owner_email_verified": {
+      "type": "boolean",
+      "value": true
+    }
+  },
+  "firstSignupHumanStepsAfterProvisioning": 0,
+  "disclosure": {
+    "withoutAcceptance": "browser review required",
+    "completedWith": "official CLI accept_disclosure:true for preapproved scopes"
+  },
+  "query": "Europe data",
+  "searchSequence": [
+    {
+      "status": 200,
+      "error": null,
+      "results": [
+        "Northstar Data",
+        "Cedar Pipeline"
+      ]
+    },
+    {
+      "status": 200,
+      "error": null,
+      "results": [
+        "Northstar Data",
+        "Cedar Pipeline"
+      ]
+    },
+    {
+      "status": 200,
+      "error": null,
+      "results": [
+        "Northstar Data",
+        "Cedar Pipeline"
+      ]
+    },
+    {
+      "status": 429,
+      "error": "quota_exhausted",
+      "results": []
+    }
+  ],
+  "quotaReset": {
+    "used": 0,
+    "quota": 3
+  },
+  "suspension": {
+    "status": 401,
+    "error": "sign_in_required",
+    "sameCookieBeforeAndAfter": true,
+    "quotaUsedImmediatelyBefore": 0
+  },
+  "browserErrors": [],
+  "privacy": "Identity values are masked in screenshots; unredacted provider data and raw video stay private and are excluded from deliverables."
+}

@@ -1,0 +1,22 @@
+{
+    "name": "agentid-access-example",
+    "private": true,
+    "type": "module",
+    "scripts": {
+        "dev": "bun server.ts",
+        "setup": "bun setup.ts",
+        "operator": "bun operator.ts",
+        "typecheck": "tsc --noEmit",
+        "test": "bun test --concurrent"
+    },
+    "dependencies": {
+        "@agentmail/agentid-better-auth": "^0.1.1",
+        "better-auth": "^1.7.22",
+        "zod": "^4.6.7"
+    },
+    "devDependencies": {
+        "@types/bun": "^1.4.4",
+        "playwright": "^1.65.0",
+        "typescript": "^7.0.2"
+    }
+}

@@ -1,0 +1,38 @@
+[
+    {
+        "name": "Northstar Data",
+        "sector": "Data infrastructure",
+        "region": "Europe",
+        "employees": 42
+    },
+    {
+        "name": "Harbor Metrics",
+        "sector": "Analytics",
+        "region": "Europe",
+        "employees": 28
+    },
+    {
+        "name": "Juniper Systems",
+        "sector": "Data infrastructure",
+        "region": "North America",
+        "employees": 120
+    },
+    {
+        "name": "Slate Search",
+        "sector": "Search",
+        "region": "Asia Pacific",
+        "employees": 19
+    },
+    {
+        "name": "Lighthouse Labs",
+        "sector": "Analytics",
+        "region": "North America",
+        "employees": 63
+    },
+    {
+        "name": "Cedar Pipeline",
+        "sector": "Data infrastructure",
+        "region": "Europe",
+        "employees": 17
+    }
+]

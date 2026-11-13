@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Fieldnotes · Agent access experiment</title>
+<style>
+[hidden]{display:none!important}
+:root{font-family:ui-sans-serif,system-ui,sans-serif;color:#202b32;background:#f4f3ee;font-size:16px}*{box-sizing:border-box}body{margin:0}main{max-width:1120px;margin:0 auto;padding:44px 32px}header{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #cfd3ce;padding-bottom:23px}.brand{font-weight:700;letter-spacing:-1px;font-size:27px}.tag{font:12px ui-monospace,monospace;color:#596b68;text-transform:uppercase;letter-spacing:1px}h1{font-size:48px;font-weight:550;letter-spacing:-2px;line-height:1.1;max-width:720px;margin:42px 0 14px}h2{font-size:19px;font-weight:600;margin:0 0 19px}p{line-height:1.6;color:#53625f}.lead{max-width:680px;font-size:18px}.grid{display:grid;grid-template-columns:1.1fr 1fr;gap:24px;margin-top:30px}.card{background:#fffefb;border:1px solid #d8ddd5;border-radius:8px;padding:26px}button,.button{background:#214d43;color:#fff;border:0;border-radius:5px;padding:12px 19px;font:inherit;font-weight:550;text-decoration:none;display:inline-block;cursor:pointer}input{font:inherit;width:100%;padding:12px;border:1px solid #acb9b0;border-radius:5px;background:#fff}label{font-size:13px;color:#53625f;display:block;margin-bottom:8px}form{display:flex;gap:10px;margin-top:8px}form input{min-width:0}small{font-size:12px;color:#6b7974}.badge{display:inline-block;padding:5px 9px;border-radius:4px;background:#e1eee5;color:#214d43;font:12px ui-monospace,monospace;margin-bottom:15px}.warning{background:#fff0d2;color:#72500c}pre{font:12px/1.6 ui-monospace,monospace;white-space:pre-wrap;overflow-wrap:anywhere;max-height:330px;overflow:auto}table{width:100%;border-collapse:collapse;margin-top:20px;font-size:14px}td,th{text-align:left;padding:12px 8px;border-bottom:1px solid #e3e6dd}th{font-size:11px;color:#66766b;letter-spacing:.6px;text-transform:uppercase}.log{font:13px/1.7 ui-monospace,monospace}.steps{display:flex;gap:20px;margin-top:24px;font-size:12px;color:#617469}.steps span{flex:1;border-top:2px solid #b7c8b8;padding-top:9px}#state{font:12px ui-monospace,monospace}@media(max-width:760px){main{padding:26px 18px}.grid{grid-template-columns:1fr}h1{font-size:38px}header{align-items:start;gap:20px}form{flex-wrap:wrap}}
+</style>
+</head>
+<body><main>
+<header><div class="brand">Fieldnotes<span style="color:#789181"> / </span></div><div class="tag">AgentID experiment<br><span style="text-transform:none;letter-spacing:0">Local app · fictional sample data</span></div></header>
+<h1>Let the agent search.<br>Keep access under control.</h1>
+<p class="lead">An agent signs in, searches a small company dataset, and receives a three-search allowance. The app can end its access at any time.</p>
+<div class="steps"><span>01 · Identify the agent</span><span>02 · Grant limited access</span><span>03 · Enforce and revoke</span></div>
+<div class="grid">
+<section class="card"><h2>Agent identity</h2><div id="identity-state" class="badge warning">Checking session</div><p id="setup"></p><a id="signin" class="button" href="/login/agentid">Continue with AgentID</a><pre id="identity">No signed-in identity received yet.</pre><small>AgentID supplies identity. Owner claims depend on scopes and sharing approval.</small></section>
+<section class="card"><h2>Search sample companies</h2><div id="allowance" class="badge">3 searches per account</div><label for="query">Match a region, sector or name</label><form id="search"><input id="query" name="query" value="Europe data" required maxlength="120"><button type="submit">Search</button></form><p id="message" role="status">Try “Europe data” to find data infrastructure companies in Europe.</p><div id="results"></div><h2 style="margin-top:28px">Request history</h2><div id="history" class="log">Waiting for the first request.</div><small>Permissions, usage limits and session revocation are enforced by this app.</small></section>
+</div><p id="state">No access has been granted yet.</p>
+</main><script type="module">
+const identity = document.querySelector('#identity');
+const identityState = document.querySelector('#identity-state');
+const allowance = document.querySelector('#allowance');
+const history = document.querySelector('#history');
+const entries = [];
+async function refresh() {
+ const response = await fetch('/api/me');
+ const body = await response.json();
+ if(!response.ok){identityState.textContent = response.status === 401 ? 'Signed out' : 'Access denied'; identityState.className='badge warning';document.querySelector('#signin').hidden=false;document.querySelector('#state').textContent=`HTTP ${response.status} · ${body.error}`;return;}
+ document.querySelector('#signin').hidden=true;
+ identityState.textContent=body.source==='live-agentid'?'Live AgentID identity':'LOCAL FIXTURE · not an AgentID signup';
+ identityState.className=body.source==='live-agentid'?'badge':'badge warning';
+ identity.textContent=JSON.stringify(body.identity ?? body.user,null,2);
+ allowance.textContent=`${body.quota-body.used} of ${body.quota} searches remaining`;
+ document.querySelector('#state').textContent=`Account ${body.user.id} · server-enforced allowance`;
+ if(body.source!=='live-agentid')document.querySelector('#setup').textContent='This session was seeded locally to test app controls. Live provider signup has not been established by this screen.';
+}
+const status=await fetch('/api/status').then(r=>r.json());
+if(!status.providerConfigured)document.querySelector('#setup').textContent='AgentID registration is pending. Sign-in will become available after local credentials are configured.';
+await refresh();
+document.querySelector('#search').addEventListener('submit',async event=>{
+ event.preventDefault();
+ const response=await fetch('/api/search',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({query:document.querySelector('#query').value})});
+ const body=await response.json();
+ entries.push(`HTTP ${response.status} · ${body.error ?? 'search_allowed'}`);
+ history.replaceChildren(...entries.map(text=>{const div=document.createElement('div');div.textContent=text;return div;}));
+ document.querySelector('#message').textContent=body.message ?? body.error;
+ document.querySelector('#message').style.color=response.ok?'#214d43':'#8e3526';
+ const results=document.querySelector('#results');results.replaceChildren();
+ if(body.results?.length){const table=document.createElement('table');const row=table.insertRow();for(const text of ['Company','Region','Team']){const th=document.createElement('th');th.textContent=text;row.append(th);}for(const company of body.results){const row=table.insertRow();for(const text of [company.name,company.region,String(company.employees)])row.insertCell().textContent=text;}results.append(table);}
+ await refresh();
+});
+</script></body></html>
